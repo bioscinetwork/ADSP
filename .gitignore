@@ -1,0 +1,41 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.pytest_tmp/
+.venv/
+venv/
+env/
+.idea/
+.vscode/
+*.log
+build/
+dist/
+tmp/
+temp/
+results/**
+reports/**
+logs/**
+*.dlg
+*.glg
+*.map
+*.fld
+*.xyz
+*.pdbqt
+*.dpf
+*.gpf
+*.pdbqt
+*.xlsx
+*.csv
+
+# Keep curated input structures, parameter files, executable assets, and tests.
+!1CA2.pdb
+!1CA2.cif
+!1MBN.pdb
+!1MBN.cif
+!2NV6\ (1).cif
+!2NV6\ (2).pdb
+!2nv6_B_ZID.sdf
+!ZID.cif
+!AD4_parameters.dat
+!AD4.1_bound.dat
+!AutoDock4Zn-Pipeline-main.zip

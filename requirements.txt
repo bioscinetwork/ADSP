@@ -1,0 +1,19 @@
+# AutoDock Suite Pro — Core Dependencies
+# Python 3.10+ (64-bit recommended)
+
+# Graphical User Interface
+customtkinter>=5.2.0
+
+# Molecular Modeling & Cheminformatics
+rdkit>=2023.9.0
+meeko>=0.7.0
+openbabel>=3.1.1
+
+# Scientific Computing & Data Analysis
+numpy>=1.24.0
+scipy>=1.10.0
+pandas>=2.0.0
+openpyxl>=3.1.0
+
+# Packaging & Standalone Compilation
+pyinstaller>=6.0.0

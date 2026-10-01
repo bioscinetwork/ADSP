@@ -1,0 +1,15 @@
+cff-version: 1.2.0
+title: "AutoDock Suite Platform (ADSP)"
+message: "Please cite ADSP together with the underlying AutoDock4, AutoDock Vina, Meeko, RDKit, and Open Babel software used for a run."
+type: software
+authors:
+  - name: "ADSP contributors"
+version: "0.3.0"
+license: "NOASSERTION"
+abstract: "Research-oriented molecular docking workflow scaffold built around AutoDock4 and AutoDock Vina."
+repository-code: ""
+keywords:
+  - molecular docking
+  - AutoDock4
+  - AutoDock Vina
+  - reproducibility

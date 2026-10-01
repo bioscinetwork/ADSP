@@ -1,0 +1,89 @@
+# Name: E20
+# Created by ModelServer 0.9.12
+
+# model_server_result.job_id: 12FvNg6gbzob-jV-KWzWrQ
+# model_server_result.datetime_utc: 2026-05-07 22:46:03
+# model_server_result.server_version: 0.9.12
+# model_server_result.query_name: ligand
+# model_server_result.source_id: pdb-bcif
+# model_server_result.entry_id: 4ey7
+
+# model_server_params.name: atom_site
+# model_server_params.value: {"label_asym_id":"E","auth_seq_id":604}
+
+# model_server_stats.io_time_ms: 24
+# model_server_stats.parse_time_ms: 9
+# model_server_stats.create_model_time_ms: 12
+# model_server_stats.query_time_ms: 260
+# model_server_stats.encode_time_ms: 0
+# model_server_stats.element_count: 28
+
+@<TRIPOS>MOLECULE
+E20
+28 31 1
+****
+****
+
+@<TRIPOS>ATOM
+1 C1 -18.530 -41.928 24.258 C.ar 1 E20 0.000
+2 C2 -18.970 -41.862 25.566 C.ar 1 E20 0.000
+3 C3 -18.125 -42.222 26.615 C.ar 1 E20 0.000
+4 C4 -16.817 -42.659 26.338 C.ar 1 E20 0.000
+5 C5 -16.370 -42.740 25.037 C.ar 1 E20 0.000
+6 C6 -17.234 -42.369 23.979 C.ar 1 E20 0.000
+7 C7 -14.962 -43.221 24.996 C.2 1 E20 0.000
+8 C8 -14.502 -43.478 26.419 C.3 1 E20 0.000
+9 C9 -15.710 -43.107 27.282 C.3 1 E20 0.000
+10 C10 -13.970 -44.894 26.642 C.3 1 E20 0.000
+11 C11 -12.925 -44.965 27.776 C.3 1 E20 0.000
+12 C12 -13.505 -44.756 29.141 C.3 1 E20 0.000
+13 C13 -12.529 -44.933 30.274 C.3 1 E20 0.000
+14 N14 -11.729 -46.166 30.212 N.3 1 E20 0.000
+15 C15 -11.189 -46.351 28.862 C.3 1 E20 0.000
+16 C16 -12.257 -46.328 27.808 C.3 1 E20 0.000
+17 C17 -10.962 -46.545 31.395 C.3 1 E20 0.000
+18 C18 -9.698 -45.708 31.539 C.ar 1 E20 0.000
+19 C19 -9.740 -44.445 32.158 C.ar 1 E20 0.000
+20 C20 -8.576 -43.676 32.286 C.ar 1 E20 0.000
+21 C21 -7.363 -44.171 31.800 C.ar 1 E20 0.000
+22 C22 -7.317 -45.434 31.176 C.ar 1 E20 0.000
+23 C23 -8.475 -46.200 31.051 C.ar 1 E20 0.000
+24 O24 -14.278 -43.362 23.959 O.2 1 E20 0.000
+25 O25 -19.387 -41.562 23.244 O.3 1 E20 0.000
+26 C26 -18.995 -41.561 21.931 C.3 1 E20 0.000
+27 O27 -20.264 -41.407 25.839 O.3 1 E20 0.000
+28 C28 -20.658 -41.266 27.175 C.3 1 E20 0.000
+@<TRIPOS>BOND
+1 1 2 ar
+2 1 6 ar
+3 1 25 1
+4 2 3 ar
+5 2 27 1
+6 3 4 ar
+7 4 5 ar
+8 4 9 1
+9 5 6 ar
+10 5 7 1
+11 7 8 1
+12 7 24 2
+13 8 9 1
+14 8 10 1
+15 10 11 1
+16 11 12 1
+17 11 16 1
+18 12 13 1
+19 13 14 1
+20 14 15 1
+21 14 17 1
+22 15 16 1
+23 17 18 1
+24 18 19 ar
+25 18 23 ar
+26 19 20 ar
+27 20 21 ar
+28 21 22 ar
+29 22 23 ar
+30 25 26 1
+31 27 28 1
+@<TRIPOS>SUBSTRUCTURE
+1 E20 1

@@ -1,0 +1,8 @@
+PyMOL License Notification
+==========================
+PyMOL is a commercial and open-source molecular visualization system by Schrödinger, LLC.
+Please check and ensure compliance with PyMOL licensing terms at:
+https://www.pymol.org/
+
+Recorded: 2026-09-24T13:36:00+01:00
+AutoDock Suite Pro — PyMOL Integration

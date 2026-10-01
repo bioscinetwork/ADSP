@@ -1,0 +1,75 @@
+# ============================================================
+# AUTODOCK SUITE PRO — PROJECT CONFIGURATION v0.3.0
+# ============================================================
+
+[project]
+name = "Docking_Project"
+root = "."
+
+[executables]
+vina       = "C:/Users/Administrator/Downloads/Docking Automation/bin/vina.exe"
+vina_split = "C:/Users/Administrator/Downloads/Docking Automation/bin/vina_split.exe"
+autogrid4  = "C:/Users/Administrator/Downloads/Docking Automation/bin/autogrid4.exe"
+autodock4  = "C:/Users/Administrator/Downloads/Docking Automation/bin/autodock4.exe"
+obabel     = "C:/Users/Administrator/Downloads/Docking Automation/bin/obabel.exe"
+
+[inputs]
+receptor_directory = "C:/Users/Administrator/Downloads/Docking Automation/receptors"
+ligand_directory   = "C:/Users/Administrator/Downloads/Docking Automation/ligands"
+
+[outputs]
+result_directory = "C:/Users/Administrator/Downloads/Docking Automation/results"
+log_directory    = "C:/Users/Administrator/Downloads/Docking Automation/logs"
+report_directory = "C:/Users/Administrator/Downloads/Docking Automation/reports"
+
+[engine]
+type = "BOTH"
+
+[docking]
+mode = "RIGID"
+
+[vina]
+exhaustiveness = 8
+num_modes      = 9
+energy_range   = 6.0
+cpu            = "AUTO"
+seed           = "AUTO"
+scoring        = "vina"
+min_rmsd       = 1.0
+
+[retry]
+enabled = false
+
+[autodock4]
+algorithm          = "LGA"
+ga_run             = 100
+ga_pop_size        = 150
+ga_num_evals       = 2500000
+ga_num_generations = 27000
+ga_elitism         = 1
+ga_mutation_rate   = 0.02
+ga_crossover_rate  = 0.8
+sw_max_its         = 300
+sw_max_succ        = 4
+sw_max_fail        = 4
+sw_rho             = 1.0
+sw_lb_rho          = 0.01
+ls_search_freq     = 0.06
+rmstol             = 2.0
+outlev             = 1
+unbound_model      = "bound"
+seed               = "AUTO"
+reuse_existing_maps = false
+
+[execution]
+sequential  = true
+max_workers = 1
+resume      = true
+dry_run     = false
+
+[reporting]
+csv   = true
+excel = true
+
+[ui]
+theme = "Noir"

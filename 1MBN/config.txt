@@ -1,0 +1,12 @@
+# AutoDock Vina Grid Configuration for 1MBN
+center_x = 16.400
+center_y = 28.250
+center_z = 4.550
+
+size_x = 25.0
+size_y = 25.0
+size_z = 25.0
+
+exhaustiveness = 8
+num_modes = 9
+energy_range = 6.0

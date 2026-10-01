@@ -1,0 +1,64 @@
+# Name: HRM
+# Created by ModelServer 0.9.13
+
+# model_server_result.job_id: u8_Flq4fzrArAzmLYGTNVg
+# model_server_result.datetime_utc: 2026-09-12 19:45:05
+# model_server_result.server_version: 0.9.13
+# model_server_result.query_name: ligand
+# model_server_result.source_id: pdb-bcif
+# model_server_result.entry_id: 2z5x
+
+# model_server_params.name: atom_site
+# model_server_params.value: {"label_asym_id":"C","auth_seq_id":700}
+
+# model_server_stats.io_time_ms: 249
+# model_server_stats.parse_time_ms: 4
+# model_server_stats.create_model_time_ms: 3
+# model_server_stats.query_time_ms: 173
+# model_server_stats.encode_time_ms: 0
+# model_server_stats.element_count: 16
+
+@<TRIPOS>MOLECULE
+HRM
+16 18 1
+****
+****
+
+@<TRIPOS>ATOM
+1 CAB 37.977 27.050 -17.761 C.3 1 HRM 0.000
+2 CAL 38.218 27.484 -16.327 C.ar 1 HRM 0.000
+3 NAH 37.313 28.319 -15.782 N.ar 1 HRM 0.000
+4 CAC 37.427 28.825 -14.537 C.ar 1 HRM 0.000
+5 CAE 38.528 28.487 -13.752 C.ar 1 HRM 0.000
+6 CAO 39.506 27.650 -14.304 C.ar 1 HRM 0.000
+7 CAP 39.344 27.125 -15.603 C.ar 1 HRM 0.000
+8 NAI 40.429 26.375 -15.855 N.ar 1 HRM 0.000
+9 CAM 41.234 26.396 -14.779 C.ar 1 HRM 0.000
+10 CAG 42.450 25.781 -14.565 C.ar 1 HRM 0.000
+11 CAN 40.694 27.172 -13.785 C.ar 1 HRM 0.000
+12 CAF 41.313 27.374 -12.510 C.ar 1 HRM 0.000
+13 CAD 42.557 26.767 -12.285 C.ar 1 HRM 0.000
+14 CAK 43.088 25.966 -13.335 C.ar 1 HRM 0.000
+15 OAJ 44.300 25.365 -13.147 O.3 1 HRM 0.000
+16 CAA 44.939 24.766 -14.320 C.3 1 HRM 0.000
+@<TRIPOS>BOND
+1 1 2 1
+2 2 3 ar
+3 2 7 ar
+4 3 4 ar
+5 4 5 ar
+6 5 6 ar
+7 6 7 ar
+8 6 11 ar
+9 7 8 ar
+10 8 9 ar
+11 9 10 ar
+12 9 11 ar
+13 10 14 ar
+14 11 12 ar
+15 12 13 ar
+16 13 14 ar
+17 14 15 1
+18 15 16 1
+@<TRIPOS>SUBSTRUCTURE
+1 HRM 1
