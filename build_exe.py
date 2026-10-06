@@ -136,8 +136,19 @@ def generate_spec_file(bins: Dict[str, Optional[Path]]) -> Path:
     # ad4_compatibility.py resolves them relative to Path(__file__).parent, which
     # inside a PyInstaller bundle corresponds to _internal/.  Destination '.' places
     # them at the root of _internal/ alongside all other bundled .py modules.
-    for _ad4_asset in ('AD4_parameters.dat', 'AD4.1_bound.dat', 'AutoDock4Zn-Pipeline-main.zip'):
-        _ad4_path = Path(_ad4_asset)
+    if Path('parameter_profiles').is_dir():
+        datas.append(f"('{Path('parameter_profiles').resolve().as_posix()}', 'parameter_profiles')")
+        print("  + Bundling parameter_profiles directory tree")
+    if Path('external').is_dir():
+        datas.append(f"('{Path('external').resolve().as_posix()}', 'external')")
+        print("  + Bundling external directory tree")
+
+    for _ad4_asset, _sub in [
+        ('AD4_parameters.dat', 'parameter_profiles/ad4_standard_4.2/AD4_parameters.dat'),
+        ('AD4.1_bound.dat', 'parameter_profiles/ad4_1_bound/AD4.1_bound.dat'),
+        ('AutoDock4Zn-Pipeline-main.zip', 'external/autodock4zn/AutoDock4Zn-Pipeline-main.zip'),
+    ]:
+        _ad4_path = Path(_sub) if Path(_sub).is_file() else Path(_ad4_asset)
         if _ad4_path.is_file():
             datas.append(f"('{_ad4_path.resolve().as_posix()}', '.')")
             print(f"  + Bundling AD4 parameter asset: {_ad4_asset}")
@@ -412,11 +423,22 @@ def copy_distribution_assets(dist_dir: Path, bins: Dict[str, Optional[Path]]) ->
     #   AD4.1_bound.dat    : 6B98F7AB508F4882801938F8CED1C0BF38096496155A8005BAF941A201781CE8
     _internal_dir = dist_dir / '_internal'
     _internal_dir.mkdir(parents=True, exist_ok=True)
-    for _ad4_asset in ('AD4_parameters.dat', 'AD4.1_bound.dat', 'AutoDock4Zn-Pipeline-main.zip'):
-        _src = Path(_ad4_asset)
+    if Path('parameter_profiles').is_dir():
+        shutil.copytree(Path('parameter_profiles'), _internal_dir / 'parameter_profiles', dirs_exist_ok=True)
+        print(f"  + Copied parameter_profiles/ tree to {_internal_dir / 'parameter_profiles'}")
+    if Path('external').is_dir():
+        shutil.copytree(Path('external'), _internal_dir / 'external', dirs_exist_ok=True)
+        print(f"  + Copied external/ tree to {_internal_dir / 'external'}")
+
+    for _ad4_asset, _sub in [
+        ('AD4_parameters.dat', 'parameter_profiles/ad4_standard_4.2/AD4_parameters.dat'),
+        ('AD4.1_bound.dat', 'parameter_profiles/ad4_1_bound/AD4.1_bound.dat'),
+        ('AutoDock4Zn-Pipeline-main.zip', 'external/autodock4zn/AutoDock4Zn-Pipeline-main.zip'),
+    ]:
+        _src = Path(_sub) if Path(_sub).is_file() else Path(_ad4_asset)
         if _src.is_file():
             shutil.copy2(_src, _internal_dir / _ad4_asset)
-            print(f"  + Copied {_ad4_asset} to {_internal_dir}")
+            print(f"  + Copied {_src.name} to {_internal_dir}")
         else:
             print(f"  - Skipping missing asset: {_ad4_asset}")
 

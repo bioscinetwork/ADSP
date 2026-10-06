@@ -11,6 +11,7 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass, field, replace
 from datetime import datetime, timezone
 import hashlib
+import sys
 import json
 import tomllib
 import zipfile
@@ -110,15 +111,43 @@ STANDARD_AD4_ATOM_TYPES: FrozenSet[str] = frozenset({
 _PROFILE_ROOT = Path(__file__).resolve().parent
 
 
-def _bundled_checksum(filename: str) -> Optional[str]:
-    path = _PROFILE_ROOT / filename
-    if not path.is_file():
+def _resolve_bundled_file(filename: str, profile_subfolder: Optional[str] = None) -> Optional[Path]:
+    candidates = []
+    if profile_subfolder:
+        candidates.append(_PROFILE_ROOT / "parameter_profiles" / profile_subfolder / filename)
+        candidates.append(_PROFILE_ROOT / profile_subfolder / filename)
+    candidates.append(_PROFILE_ROOT / "parameter_profiles" / filename)
+    if filename.endswith(".zip"):
+        candidates.append(_PROFILE_ROOT / "external" / "autodock4zn" / filename)
+    candidates.append(_PROFILE_ROOT / filename)
+    if hasattr(sys, "_MEIPASS"):
+        meipass = Path(sys._MEIPASS)
+        if profile_subfolder:
+            candidates.append(meipass / "parameter_profiles" / profile_subfolder / filename)
+            candidates.append(meipass / profile_subfolder / filename)
+        candidates.append(meipass / "parameter_profiles" / filename)
+        if filename.endswith(".zip"):
+            candidates.append(meipass / "external" / "autodock4zn" / filename)
+        candidates.append(meipass / filename)
+    for c in candidates:
+        if c.is_file():
+            return c
+    return None
+
+
+def _bundled_checksum(filename: str, profile_subfolder: Optional[str] = None) -> Optional[str]:
+    path = _resolve_bundled_file(filename, profile_subfolder)
+    if not path or not path.is_file():
         return None
     digest = hashlib.sha256()
     with path.open("rb") as handle:
         for block in iter(lambda: handle.read(1024 * 1024), b""):
             digest.update(block)
     return digest.hexdigest()
+
+_std_p = _resolve_bundled_file("AD4_parameters.dat", "ad4_standard_4.2")
+_bound_p = _resolve_bundled_file("AD4.1_bound.dat", "ad4_1_bound")
+_zn_p = _resolve_bundled_file("AutoDock4Zn-Pipeline-main.zip", "external/autodock4zn")
 
 STANDARD_AD4_PROFILE = ParameterProfile(
     profile_id="ad4_standard_4.2",
@@ -127,11 +156,11 @@ STANDARD_AD4_PROFILE = ParameterProfile(
     supported_atom_types=STANDARD_AD4_ATOM_TYPES,
     version="4.2",
     parameter_file="AD4_parameters.dat",
-    source_path=str(_PROFILE_ROOT),
+    source_path=str(_std_p.parent if _std_p else _PROFILE_ROOT),
     source="Bundled AD4_parameters.dat; AutoDockTools/MGLTools-compatible AD4 parameter asset",
     reference="AutoDock4 force-field parameterization",
     license="AutoDock GPL header and AutoDock copyright notice",
-    sha256=_bundled_checksum("AD4_parameters.dat"),
+    sha256=_bundled_checksum("AD4_parameters.dat", "ad4_standard_4.2"),
     validation_status="valid",
     specialized_metal_workflow=False,
     compatible_preparation_workflow="standard_ad4",
@@ -146,11 +175,11 @@ AD4_1_BOUND_PROFILE = ParameterProfile(
     supported_atom_types=STANDARD_AD4_ATOM_TYPES,
     version="4.1-bound",
     parameter_file="AD4.1_bound.dat",
-    source_path=str(_PROFILE_ROOT),
+    source_path=str(_bound_p.parent if _bound_p else _PROFILE_ROOT),
     source="Bundled AD4.1_bound.dat; source header identifies Version 4.1 Bound",
     reference="Huey, Morris, Olson & Goodsell (2007), J Comput Chem 28:1145-1152",
     license="GNU General Public License v2 or later; AutoDock copyright notice",
-    sha256=_bundled_checksum("AD4.1_bound.dat"),
+    sha256=_bundled_checksum("AD4.1_bound.dat", "ad4_1_bound"),
     validation_status="valid",
     compatible_preparation_workflow="ad4_1_bound",
     notes="Distinct bound-state free-energy coefficients; not silently merged with standard AD4.",
@@ -163,11 +192,11 @@ AD4ZN_PROFILE = ParameterProfile(
     supported_atom_types=STANDARD_AD4_ATOM_TYPES | frozenset({"TZ"}),
     version="reference",
     parameter_file="AutoDock4Zn-Pipeline-main.zip",
-    source_path=str(_PROFILE_ROOT),
+    source_path=str(_zn_p.parent if _zn_p else _PROFILE_ROOT),
     source="AutoDock4Zn-Pipeline-main.zip; AD4Zn.dat is an archive member",
     reference="AutoDock4Zn reference pipeline README and AD4Zn.dat",
     license="GPLv3; see archive LICENSE",
-    sha256=_bundled_checksum("AutoDock4Zn-Pipeline-main.zip"),
+    sha256=_bundled_checksum("AutoDock4Zn-Pipeline-main.zip", "external/autodock4zn"),
     validation_status="reference_only",
     specialized_metal_workflow=True,
     specialized_workflow="AutoDock4Zn",

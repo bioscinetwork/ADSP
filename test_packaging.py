@@ -81,7 +81,9 @@ def test_spec_file_bundles_ad4_parameter_assets():
 
 def test_ad4_parameters_dat_checksum():
     """AD4_parameters.dat must match the verified reference checksum."""
-    path = REPO_ROOT / "AD4_parameters.dat"
+    path = REPO_ROOT / "parameter_profiles" / "ad4_standard_4.2" / "AD4_parameters.dat"
+    if not path.is_file():
+        path = REPO_ROOT / "AD4_parameters.dat"
     assert path.is_file(), f"AD4_parameters.dat not found at {path}"
     observed = _sha256(path)
     assert observed == AD4_PARAMS_SHA256, (
@@ -94,7 +96,9 @@ def test_ad4_parameters_dat_checksum():
 
 def test_ad41_bound_dat_checksum():
     """AD4.1_bound.dat must match the verified reference checksum."""
-    path = REPO_ROOT / "AD4.1_bound.dat"
+    path = REPO_ROOT / "parameter_profiles" / "ad4_1_bound" / "AD4.1_bound.dat"
+    if not path.is_file():
+        path = REPO_ROOT / "AD4.1_bound.dat"
     assert path.is_file(), f"AD4.1_bound.dat not found at {path}"
     observed = _sha256(path)
     assert observed == AD41_BOUND_SHA256, (

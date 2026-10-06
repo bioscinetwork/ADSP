@@ -32,9 +32,10 @@ from pathlib import Path
 # SPECPATH is provided by PyInstaller at build time.
 _here = Path(SPECPATH).resolve()
 
-_ad4_params  = _here / 'AD4_parameters.dat'
-_ad41_bound  = _here / 'AD4.1_bound.dat'
-_ad4zn_zip   = _here / 'AutoDock4Zn-Pipeline-main.zip'
+_param_profiles_dir = _here / 'parameter_profiles'
+_ad4_params  = (_param_profiles_dir / 'ad4_standard_4.2' / 'AD4_parameters.dat') if (_param_profiles_dir / 'ad4_standard_4.2' / 'AD4_parameters.dat').is_file() else (_here / 'AD4_parameters.dat')
+_ad41_bound  = (_param_profiles_dir / 'ad4_1_bound' / 'AD4.1_bound.dat') if (_param_profiles_dir / 'ad4_1_bound' / 'AD4.1_bound.dat').is_file() else (_here / 'AD4.1_bound.dat')
+_ad4zn_zip   = (_here / 'external' / 'autodock4zn' / 'AutoDock4Zn-Pipeline-main.zip') if (_here / 'external' / 'autodock4zn' / 'AutoDock4Zn-Pipeline-main.zip').is_file() else (_here / 'AutoDock4Zn-Pipeline-main.zip')
 _local_bin   = _here / 'bin'
 _assets_dir  = _here / 'gui' / 'assets'
 
@@ -67,6 +68,10 @@ if _ctk_path and Path(_ctk_path).is_dir():
 # AD4 scientific parameter assets -- REQUIRED for packaged AD4 operation.
 # These are placed at the root of _internal/ so ad4_compatibility.py's
 # Path(__file__).resolve().parent lookup finds them after bundling.
+if _param_profiles_dir.is_dir():
+    _datas.append((str(_param_profiles_dir), 'parameter_profiles'))
+if (_here / 'external').is_dir():
+    _datas.append((str(_here / 'external'), 'external'))
 if _ad4_params.is_file():
     _datas.append((str(_ad4_params), '.'))
 if _ad41_bound.is_file():
