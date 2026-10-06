@@ -1,0 +1,56 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "adsp"
+version = "0.3.0"
+description = "AutoDock Suite Pro — Unified Molecular Docking Platform (AutoDock4 & AutoDock Vina)"
+readme = "README.md"
+authors = [
+    { name = "ADSP Contributors" }
+]
+license = { text = "GPL-2.0-or-later" }
+requires-python = ">=3.10"
+keywords = ["molecular docking", "autodock4", "vina", "cheminformatics", "structural biology"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+    "Topic :: Scientific/Engineering :: Chemistry",
+    "License :: OSI Approved :: GNU General Public License v2 or later (GPLv2+)",
+    "Operating System :: Microsoft :: Windows",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+]
+dependencies = [
+    "PySide6>=6.5.0",
+    "rdkit>=2023.3.1",
+    "meeko>=0.4.0",
+    "openpyxl>=3.1.0",
+    "pandas>=2.0.0",
+    "numpy>=1.24.0",
+    "scipy>=1.10.0",
+    "pillow>=9.5.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pyinstaller>=6.0.0",
+]
+
+[project.scripts]
+adsp = "main:main"
+adsp-gui = "gui_qt.app:run_gui"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = [".", "src"]
+filterwarnings = [
+    "ignore::DeprecationWarning",
+]

@@ -1,0 +1,29 @@
+GNU GENERAL PUBLIC LICENSE
+Version 2, June 1991
+
+Copyright (C) 2024-2026 ADSP Contributors.
+AutoDock Suite Platform (ADSP) is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 2 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+----------------------------------------------------------------------
+Third-Party Software and Parameter Notices:
+- AutoDock4 & AutoGrid4: Copyright (C) 1989-2009 The Scripps Research Institute.
+  Licensed under the GNU General Public License (GPL).
+- AutoDock Vina: Copyright (C) 2009-2021 The Scripps Research Institute.
+  Licensed under the Apache License 2.0.
+- Open Babel: Copyright (C) 1998-2021 Open Babel development team.
+  Licensed under the GNU General Public License v2 (GPL-2.0).
+- Meeko: Copyright (C) The Scripps Research Institute.
+  Licensed under LGPL-2.1.
+- PyMOL Open-Source Exporter: See .licenses/pymol_LICENSE.txt.
