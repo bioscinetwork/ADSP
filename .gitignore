@@ -1,17 +1,46 @@
+# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Testing & Coverage
 .pytest_cache/
-.pytest_tmp/
+.pytest_tmp*/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+
+# Virtual Environments
 .venv/
 venv/
 env/
+ENV/
+
+# IDE / Editor Metadata
 .idea/
 .vscode/
+*.swp
+*.swo
+*~
+
+# Runtime logs & temporary files
 *.log
-build/
-dist/
 tmp/
 temp/
+
+# Generated docking results and intermediate files
 results/**
 reports/**
 logs/**
@@ -20,22 +49,16 @@ logs/**
 *.map
 *.fld
 *.xyz
-*.pdbqt
 *.dpf
 *.gpf
-*.pdbqt
-*.xlsx
-*.csv
 
-# Keep curated input structures, parameter files, executable assets, and tests.
-!1CA2.pdb
-!1CA2.cif
-!1MBN.pdb
-!1MBN.cif
-!2NV6\ (1).cif
-!2NV6\ (2).pdb
-!2nv6_B_ZID.sdf
-!ZID.cif
-!AD4_parameters.dat
-!AD4.1_bound.dat
-!AutoDock4Zn-Pipeline-main.zip
+# Temporary spreadsheet exports
+reports/*.xlsx
+reports/*.csv
+results/*.xlsx
+results/*.csv
+
+# Keep directory scaffolding and READMEs in results/reports/logs if present
+!results/.gitkeep
+!reports/.gitkeep
+!logs/.gitkeep
