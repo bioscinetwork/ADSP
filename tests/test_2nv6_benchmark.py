@@ -1,9 +1,14 @@
 from pathlib import Path
+import sys
+
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+NV6_DIR = PROJECT_ROOT / "benchmarks" / "2NV6"
+if str(NV6_DIR) not in sys.path:
+    sys.path.insert(0, str(NV6_DIR))
 
 from benchmark_2nv6 import compare_ligand_representations, discover, extract_pdb_component
 
-
-ROOT = Path(__file__).resolve().parent
+ROOT = NV6_DIR
 
 
 def test_2nv6_component_is_unambiguous_and_complete():

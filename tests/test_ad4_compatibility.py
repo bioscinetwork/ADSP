@@ -40,6 +40,11 @@ def pdbqt_atom(serial: int, name: str, resname: str, atom_type: str,
     )
 
 
+PROJECT_ROOT = Path(__file__).resolve().parent if (Path(__file__).resolve().parent / "main.py").is_file() else Path(__file__).resolve().parent.parent
+BENCHMARKS_DIR = PROJECT_ROOT / "benchmarks"
+PARAMETER_PROFILES_DIR = PROJECT_ROOT / "parameter_profiles"
+
+
 class TestAD4Compatibility(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory(prefix="ad4_compatibility_")
@@ -94,9 +99,10 @@ class TestAD4Compatibility(unittest.TestCase):
         self.assertTrue(result.valid)
 
     def test_bundled_parameter_assets_are_parsed(self):
-        root = Path(__file__).resolve().parent
-        standard_types = set(parse_parameter_atom_types(root / "AD4_parameters.dat"))
-        bound_types = set(parse_parameter_atom_types(root / "AD4.1_bound.dat"))
+        std_p = (PARAMETER_PROFILES_DIR / "ad4_standard_4.2" / "AD4_parameters.dat") if (PARAMETER_PROFILES_DIR / "ad4_standard_4.2" / "AD4_parameters.dat").is_file() else (PROJECT_ROOT / "AD4_parameters.dat")
+        bnd_p = (PARAMETER_PROFILES_DIR / "ad4_1_bound" / "AD4.1_bound.dat") if (PARAMETER_PROFILES_DIR / "ad4_1_bound" / "AD4.1_bound.dat").is_file() else (PROJECT_ROOT / "AD4.1_bound.dat")
+        standard_types = set(parse_parameter_atom_types(std_p))
+        bound_types = set(parse_parameter_atom_types(bnd_p))
         self.assertIn("Zn", standard_types)
         self.assertIn("Fe", standard_types)
         self.assertEqual(standard_types, bound_types)
@@ -151,9 +157,10 @@ class TestAD4Compatibility(unittest.TestCase):
         self.assertEqual(len(provenance["atom_typing"]["files"]), 3)
 
     def test_real_receptor_component_classification(self):
-        root = Path(__file__).resolve().parent
-        ca2 = parse_hetatm_records(root / "1CA2" / "1CA2_edited.pdb")
-        mbn = parse_hetatm_records(root / "1MBN" / "1MBN_edited.pdb")
+        ca2_p = (BENCHMARKS_DIR / "1CA2" / "1CA2_edited.pdb") if (BENCHMARKS_DIR / "1CA2" / "1CA2_edited.pdb").is_file() else (PROJECT_ROOT / "1CA2" / "1CA2_edited.pdb")
+        mbn_p = (BENCHMARKS_DIR / "1MBN" / "1MBN_edited.pdb") if (BENCHMARKS_DIR / "1MBN" / "1MBN_edited.pdb").is_file() else (PROJECT_ROOT / "1MBN" / "1MBN_edited.pdb")
+        ca2 = parse_hetatm_records(ca2_p)
+        mbn = parse_hetatm_records(mbn_p)
         zinc = next(item for item in ca2 if item["resname"] == "ZN")
         heme = next(item for item in mbn if item["resname"] == "HEM")
         self.assertEqual((zinc["chain"], zinc["resseq"], zinc["component_type"]), ("A", 262, "METAL"))
@@ -162,17 +169,16 @@ class TestAD4Compatibility(unittest.TestCase):
 
     def test_cif_preparation_preserves_metal_atom_types(self):
         from prepare import prepare_receptor_pdbqt
-        root = Path(__file__).resolve().parent
-        for filename, expected in (("1CA2.cif", "Zn"), ("1MBN.cif", "Fe")):
+        for stem, filename, expected in (("1CA2", "1CA2.cif", "Zn"), ("1MBN", "1MBN.cif", "Fe")):
+            src_p = (BENCHMARKS_DIR / stem / filename) if (BENCHMARKS_DIR / stem / filename).is_file() else (PROJECT_ROOT / filename)
             output = self.root / (filename + ".pdbqt")
-            prepare_receptor_pdbqt(root / filename, output, cleanup_water=False, add_hydrogens=False)
+            prepare_receptor_pdbqt(src_p, output, cleanup_water=False, add_hydrogens=False)
             atom_lines = [line for line in output.read_text(errors="replace").splitlines()
                           if line.startswith(("ATOM", "HETATM"))]
             self.assertIn(expected, {line[77:79].strip() for line in atom_lines})
 
     def test_cif_and_pdb_preparation_preserve_identity_and_coordinates(self):
         from prepare import prepare_receptor_pdbqt
-        root = Path(__file__).resolve().parent
 
         def records(path):
             return {
@@ -185,19 +191,24 @@ class TestAD4Compatibility(unittest.TestCase):
         for stem in ("1CA2", "1MBN"):
             pdb_out = self.root / f"{stem}_pdb.pdbqt"
             cif_out = self.root / f"{stem}_cif.pdbqt"
-            prepare_receptor_pdbqt(root / f"{stem}.pdb", pdb_out, cleanup_water=True, add_hydrogens=False)
-            prepare_receptor_pdbqt(root / f"{stem}.cif", cif_out, cleanup_water=True, add_hydrogens=False)
+            pdb_src = (BENCHMARKS_DIR / stem / f"{stem}.pdb") if (BENCHMARKS_DIR / stem / f"{stem}.pdb").is_file() else (PROJECT_ROOT / f"{stem}.pdb")
+            cif_src = (BENCHMARKS_DIR / stem / f"{stem}.cif") if (BENCHMARKS_DIR / stem / f"{stem}.cif").is_file() else (PROJECT_ROOT / f"{stem}.cif")
+            prepare_receptor_pdbqt(pdb_src, pdb_out, cleanup_water=True, add_hydrogens=False)
+            prepare_receptor_pdbqt(cif_src, cif_out, cleanup_water=True, add_hydrogens=False)
             self.assertEqual(records(pdb_out), records(cif_out))
             pdb_out.unlink(missing_ok=True)
             cif_out.unlink(missing_ok=True)
 
     def test_2nv6_cif_and_pdb_preparation_preserve_zid(self):
         from prepare import prepare_receptor_pdbqt
-        root = Path(__file__).resolve().parent
+        root = Path(__file__).resolve().parent.parent
+        nv6_dir = root / "benchmarks" / "2NV6"
+        pdb_src = nv6_dir / "2NV6 (2).pdb" if (nv6_dir / "2NV6 (2).pdb").is_file() else root / "2NV6 (2).pdb"
+        cif_src = nv6_dir / "2NV6 (1).cif" if (nv6_dir / "2NV6 (1).cif").is_file() else root / "2NV6 (1).cif"
         pdb_out = self.root / "2nv6_pdb.pdbqt"
         cif_out = self.root / "2nv6_cif.pdbqt"
-        prepare_receptor_pdbqt(root / "2NV6 (2).pdb", pdb_out, cleanup_water=True, add_hydrogens=False)
-        prepare_receptor_pdbqt(root / "2NV6 (1).cif", cif_out, cleanup_water=True, add_hydrogens=False)
+        prepare_receptor_pdbqt(pdb_src, pdb_out, cleanup_water=True, add_hydrogens=False)
+        prepare_receptor_pdbqt(cif_src, cif_out, cleanup_water=True, add_hydrogens=False)
 
         def zid(path):
             return sorted((line[12:16].strip(), line[21], line[22:26].strip(), line[30:54])

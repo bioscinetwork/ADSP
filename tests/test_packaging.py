@@ -13,7 +13,7 @@ import hashlib
 import re
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parent
+REPO_ROOT = Path(__file__).resolve().parent.parent if not (Path(__file__).resolve().parent / 'main.py').is_file() else Path(__file__).resolve().parent.parent if not (Path(__file__).resolve().parent / 'main.py').is_file() else Path(__file__).resolve().parent
 
 # Reference checksums (verified against canonical files)
 AD4_PARAMS_SHA256 = "625DE5779B914382E21A135C776EFBC02B4221085BD0280118D103CCDD93EA7C"
