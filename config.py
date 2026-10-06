@@ -234,12 +234,12 @@ def load_config(config_path: Path | str) -> ProjectConfig:
     config.receptor_directory = _resolve_input_dir(
         inputs.get("receptor_directory", "receptors"),
         config.project_root,
-        ["Macromolecules", "macromolecules", "receptors", "Receptors"],
+        ["data/receptors", "data/Macromolecules", "Macromolecules", "macromolecules", "receptors", "Receptors"],
     )
     config.ligand_directory = _resolve_input_dir(
         inputs.get("ligand_directory", "ligands"),
         config.project_root,
-        ["Ligands", "ligands", "compounds", "Compounds"],
+        ["data/ligands", "data/compounds", "Ligands", "ligands", "compounds", "Compounds"],
     )
 
     # Receptor/ligand selection
@@ -395,10 +395,10 @@ def set_workspace_directory(config: ProjectConfig, workspace_dir: Path | str) ->
     config.project_name = ws.name
 
     config.receptor_directory = _resolve_input_dir(
-        "receptors", ws, ["Macromolecules", "macromolecules", "receptors", "Receptors"]
+        "receptors", ws, ["data/receptors", "data/Macromolecules", "Macromolecules", "macromolecules", "receptors", "Receptors"]
     )
     config.ligand_directory = _resolve_input_dir(
-        "ligands", ws, ["Ligands", "ligands", "compounds", "Compounds"]
+        "ligands", ws, ["data/ligands", "data/compounds", "Ligands", "ligands", "compounds", "Compounds"]
     )
 
     config.result_directory = (ws / "results").resolve()
