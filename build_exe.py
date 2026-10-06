@@ -452,14 +452,17 @@ def copy_distribution_assets(dist_dir: Path, bins: Dict[str, Optional[Path]]) ->
     for folder_name in ("results", "reports", "logs"):
         (dist_dir / folder_name).mkdir(parents=True, exist_ok=True)
 
-    # 4. Copy receptors and ligands
+    # 4. Copy receptors, ligands, and data
+    if Path("data").is_dir():
+        shutil.copytree(Path("data"), dist_dir / "data", dirs_exist_ok=True)
+        print("  + Bundled data/ tree into distribution")
+
     for data_dir in ("receptors", "ligands"):
-        src = Path(data_dir)
+        src = Path("data") / data_dir if (Path("data") / data_dir).is_dir() else Path(data_dir)
         dst = dist_dir / data_dir
+        dst.mkdir(parents=True, exist_ok=True)
         if src.is_dir():
-            if dst.exists():
-                shutil.rmtree(dst)
-            shutil.copytree(src, dst)
+            shutil.copytree(src, dst, dirs_exist_ok=True)
             print(f"  + Bundled {data_dir}/ into distribution")
 
     # 5. Create standalone executable launcher batch files for users without Python
