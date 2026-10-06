@@ -82,105 +82,117 @@ def find_binaries() -> Dict[str, Optional[Path]]:
     return bins
 
 
-def generate_spec_file(bins: Dict[str, Optional[Path]]) -> Path:
-    """Generate PyInstaller spec file."""
-    import customtkinter
-    ctk_path = Path(customtkinter.__file__).parent.resolve()
+def generate_spec_file(bins: Dict[str, Optional[Path]] = None) -> Path:
+    """Generate or return portable PyInstaller spec file."""
+    spec_path = Path("AutoDockSuitePro.spec")
+    if spec_path.is_file():
+        content = spec_path.read_text(encoding="utf-8", errors="replace")
+        if "PORTABLE TEMPLATE" in content:
+            print(f"[INFO] Using existing portable spec: {spec_path}")
+            return spec_path
 
-    # Collect data files
-    datas = [
-        f"('{ctk_path.as_posix()}', 'customtkinter')",
-        "('project_config.toml', '.')",
-    ]
-    assets_dir = Path("gui/assets").resolve()
-    if assets_dir.is_dir():
-        datas.append(f"('{assets_dir.as_posix()}', 'gui/assets')")
+    # AD4 scientific parameter assets bundle logic for spec:
+    # AD4_parameters.dat and AD4.1_bound.dat must be referenced.
+    spec_content = """# -*- mode: python ; coding: utf-8 -*-
+# AutoDock Suite Pro - PyInstaller Spec (PORTABLE TEMPLATE)
 
-    # Bundle Meeko parameter data files
+import sys
+from pathlib import Path
+
+# SPECPATH is provided by PyInstaller at build time.
+_here = Path(SPECPATH).resolve()
+
+_ad4_params  = _here / 'parameter_profiles' / 'ad4_standard_4.2' / 'AD4_parameters.dat'
+_ad41_bound  = _here / 'parameter_profiles' / 'ad4_1_bound' / 'AD4.1_bound.dat'
+_ad4zn_zip   = _here / 'external' / 'autodock4zn' / 'AutoDock4Zn-Pipeline-main.zip'
+_local_bin   = _here / 'bin'
+_assets_dir  = _here / 'gui' / 'assets'
+
+
+def _site_pkg_dir(pkg_name):
     try:
-        import meeko
-        meeko_data = Path(meeko.__file__).parent.resolve() / "data"
-        if meeko_data.is_dir():
-            datas.append(f"('{meeko_data.as_posix()}', 'meeko/data')")
-            print(f"  + Bundling Meeko data: {meeko_data} -> meeko/data")
-    except Exception as e:
-        print(f"  - Warning: Could not locate Meeko data: {e}")
+        import importlib.util
+        spec = importlib.util.find_spec(pkg_name)
+        if spec and spec.origin:
+            return Path(spec.origin).resolve().parent
+    except Exception:
+        pass
+    return None
 
-    # Bundle OpenBabel plugins (.obf) and data files
-    try:
-        import openbabel
-        ob_pkg = Path(openbabel.__file__).parent.resolve()
-        ob_bin = ob_pkg / "bin"
-        if ob_bin.is_dir():
-            datas.append(f"('{ob_bin.as_posix()}', 'openbabel/bin')")
-            datas.append(f"('{ob_bin.as_posix()}', 'openbabel/lib/openbabel/3.2.1')")
-            ob_data = ob_bin / "data"
-            if ob_data.is_dir():
-                datas.append(f"('{ob_data.as_posix()}', 'openbabel/bin/data')")
-                datas.append(f"('{ob_data.as_posix()}', 'openbabel/share/openbabel/3.2.1')")
-                datas.append(f"('{ob_data.as_posix()}', 'bin/data')")
-            print(f"  + Bundling OpenBabel plugins & data from {ob_bin}")
-    except Exception as e:
-        print(f"  - Warning: Could not locate OpenBabel data: {e}")
 
-    # Bundle local bin directory contents (plugins, DLLs, data)
-    local_bin = Path("bin").resolve()
-    if local_bin.is_dir():
-        datas.append(f"('{local_bin.as_posix()}', 'bin')")
-        datas.append(f"('{local_bin.as_posix()}', '_internal/bin')")
-        if (local_bin / "data").is_dir():
-            datas.append(f"('{(local_bin / 'data').as_posix()}', 'bin/data')")
-            datas.append(f"('{(local_bin / 'data').as_posix()}', '_internal/bin/data')")
+_ctk_path   = _site_pkg_dir('customtkinter') or (_here / 'customtkinter')
+_meeko_path = _site_pkg_dir('meeko')
+_ob_path    = _site_pkg_dir('openbabel')
 
-    # Bundle AD4 scientific parameter assets -- REQUIRED for packaged AD4 operation.
-    # ad4_compatibility.py resolves them relative to Path(__file__).parent, which
-    # inside a PyInstaller bundle corresponds to _internal/.  Destination '.' places
-    # them at the root of _internal/ alongside all other bundled .py modules.
-    if Path('parameter_profiles').is_dir():
-        datas.append(f"('{Path('parameter_profiles').resolve().as_posix()}', 'parameter_profiles')")
-        print("  + Bundling parameter_profiles directory tree")
-    if Path('external').is_dir():
-        datas.append(f"('{Path('external').resolve().as_posix()}', 'external')")
-        print("  + Bundling external directory tree")
+_datas = [
+    (str(_here / 'project_config.toml'), '.'),
+]
 
-    for _ad4_asset, _sub in [
-        ('AD4_parameters.dat', 'parameter_profiles/ad4_standard_4.2/AD4_parameters.dat'),
-        ('AD4.1_bound.dat', 'parameter_profiles/ad4_1_bound/AD4.1_bound.dat'),
-        ('AutoDock4Zn-Pipeline-main.zip', 'external/autodock4zn/AutoDock4Zn-Pipeline-main.zip'),
-    ]:
-        _ad4_path = Path(_sub) if Path(_sub).is_file() else Path(_ad4_asset)
-        if _ad4_path.is_file():
-            datas.append(f"('{_ad4_path.resolve().as_posix()}', '.')")
-            print(f"  + Bundling AD4 parameter asset: {_ad4_asset}")
-        else:
-            print(f"  - AD4 asset not found (skipping): {_ad4_asset}")
+if _assets_dir.is_dir():
+    _datas.append((str(_assets_dir), 'gui/assets'))
 
-    # Add discovered binaries into bin/ folder of distribution
-    binaries = []
-    for name, path in bins.items():
-        if path and path.is_file():
-            binaries.append(f"('{path.as_posix()}', 'bin')")
-            print(f"  + Bundling binary: {name} from {path}")
-        else:
-            print(f"  - Binary not found locally: {name} (will prompt user in GUI)")
+if _ctk_path and Path(_ctk_path).is_dir():
+    _datas.append((str(_ctk_path), 'customtkinter'))
 
-    datas_str = ",\n        ".join(datas)
-    binaries_str = ",\n        ".join(binaries) if binaries else ""
+if (_here / 'parameter_profiles').is_dir():
+    _datas.append((str(_here / 'parameter_profiles'), 'parameter_profiles'))
 
-    spec_content = f"""# -*- mode: python ; coding: utf-8 -*-
-# AutoDock Suite Pro — PyInstaller Spec
+if (_here / 'external').is_dir():
+    _datas.append((str(_here / 'external'), 'external'))
+
+if (_here / 'data').is_dir():
+    _datas.append((str(_here / 'data'), 'data'))
+
+# AD4 scientific parameter assets -- REQUIRED for packaged AD4 operation.
+_param_candidates = [
+    (_ad4_params, 'AD4_parameters.dat'),
+    (_ad41_bound, 'AD4.1_bound.dat'),
+    (_ad4zn_zip, 'AutoDock4Zn-Pipeline-main.zip'),
+    (_here / 'AD4_parameters.dat', 'AD4_parameters.dat'),
+    (_here / 'AD4.1_bound.dat', 'AD4.1_bound.dat'),
+    (_here / 'AutoDock4Zn-Pipeline-main.zip', 'AutoDock4Zn-Pipeline-main.zip'),
+]
+for _src, _dst_name in _param_candidates:
+    if _src.is_file():
+        _datas.append((str(_src), '.'))
+
+if _meeko_path:
+    _meeko_data = Path(_meeko_path) / 'data'
+    if _meeko_data.is_dir():
+        _datas.append((str(_meeko_data), 'meeko/data'))
+
+if _ob_path:
+    _ob_bin = Path(_ob_path) / 'bin'
+    if _ob_bin.is_dir():
+        _datas.append((str(_ob_bin), 'openbabel/bin'))
+        _datas.append((str(_ob_bin), 'openbabel/lib/openbabel/3.2.1'))
+        _ob_data = _ob_bin / 'data'
+        if _ob_data.is_dir():
+            _datas.append((str(_ob_data), 'openbabel/bin/data'))
+            _datas.append((str(_ob_data), 'openbabel/share/openbabel/3.2.1'))
+            _datas.append((str(_ob_data), 'bin/data'))
+
+if _local_bin.is_dir():
+    _datas.append((str(_local_bin), 'bin'))
+    _datas.append((str(_local_bin), '_internal/bin'))
+    _local_bin_data = _local_bin / 'data'
+    if _local_bin_data.is_dir():
+        _datas.append((str(_local_bin_data), 'bin/data'))
+        _datas.append((str(_local_bin_data), '_internal/bin/data'))
+
+_binaries = []
+for _exe_name in ('vina.exe', 'vina_split.exe', 'autodock4.exe', 'autogrid4.exe', 'obabel.exe'):
+    _candidate = _local_bin / _exe_name
+    if _candidate.is_file():
+        _binaries.append((str(_candidate), 'bin'))
 
 block_cipher = None
 
 a = Analysis(
     ['main.py'],
-    pathex=['.'],
-    binaries=[
-        {binaries_str}
-    ],
-    datas=[
-        {datas_str}
-    ],
+    pathex=[str(_here), str(_here / 'scripts')],
+    binaries=_binaries,
+    datas=_datas,
     hiddenimports=[
         'customtkinter',
         'tkinterweb',
@@ -236,6 +248,9 @@ a = Analysis(
         'config',
         'models',
         'logging_utils',
+        'ad4_compatibility',
+        'ad4zn_adapter',
+        'rmsd_validation',
         'meeko',
         'rdkit',
         'rdkit.Chem',
@@ -253,7 +268,7 @@ a = Analysis(
         'PIL.ImageTk',
     ],
     hookspath=[],
-    hooksconfig={{}},
+    hooksconfig={},
     runtime_hooks=[],
     excludes=['tkinter.test', 'matplotlib', 'torch', 'IPython'],
     win_no_prefer_redirects=False,
@@ -280,7 +295,7 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon='gui/assets/app_icon.ico',
+    icon=str(_assets_dir / 'app_icon.ico') if (_assets_dir / 'app_icon.ico').is_file() else None,
 )
 
 coll = COLLECT(
@@ -294,11 +309,9 @@ coll = COLLECT(
     name='AutoDockSuitePro',
 )
 """
-    spec_path = Path("AutoDockSuitePro.spec")
     spec_path.write_text(spec_content, encoding="utf-8")
-    print(f"[OK] Generated {spec_path}")
+    print(f"[OK] Generated portable spec file: {spec_path}")
     return spec_path
-
 
 def copy_distribution_assets(dist_dir: Path, bins: Dict[str, Optional[Path]]) -> None:
     """Copies all configuration, binaries, and sample data into dist for 100% self-containment."""
