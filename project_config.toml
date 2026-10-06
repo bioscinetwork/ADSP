@@ -7,20 +7,20 @@ name = "Docking_Project"
 root = "."
 
 [executables]
-vina       = "C:/Users/Administrator/Downloads/Docking Automation/bin/vina.exe"
-vina_split = "C:/Users/Administrator/Downloads/Docking Automation/bin/vina_split.exe"
-autogrid4  = "C:/Users/Administrator/Downloads/Docking Automation/bin/autogrid4.exe"
-autodock4  = "C:/Users/Administrator/Downloads/Docking Automation/bin/autodock4.exe"
-obabel     = "C:/Users/Administrator/Downloads/Docking Automation/bin/obabel.exe"
+vina       = "bin/vina.exe"
+vina_split = "bin/vina_split.exe"
+autogrid4  = "bin/autogrid4.exe"
+autodock4  = "bin/autodock4.exe"
+obabel     = "bin/obabel.exe"
 
 [inputs]
-receptor_directory = "C:/Users/Administrator/Downloads/Docking Automation/receptors"
-ligand_directory   = "C:/Users/Administrator/Downloads/Docking Automation/ligands"
+receptor_directory = "receptors"
+ligand_directory   = "ligands"
 
 [outputs]
-result_directory = "C:/Users/Administrator/Downloads/Docking Automation/results"
-log_directory    = "C:/Users/Administrator/Downloads/Docking Automation/logs"
-report_directory = "C:/Users/Administrator/Downloads/Docking Automation/reports"
+result_directory = "results"
+log_directory    = "logs"
+report_directory = "reports"
 
 [engine]
 type = "BOTH"

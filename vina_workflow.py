@@ -123,7 +123,8 @@ def run_vina_job(job: DockingJob, config: ProjectConfig) -> DockingJob:
         )
 
     # ── Step 3: Construct output paths ────────────────────────────────────────
-    output_dir = job.output_dir
+    output_dir = job.output_dir or (config.result_directory / "VINA" / f"{job.receptor_name}_x_{job.ligand_name}")
+    job.output_dir = output_dir
     input_dir = output_dir / "input"
     out_dir = output_dir / "output"
     poses_dir = output_dir / "poses"

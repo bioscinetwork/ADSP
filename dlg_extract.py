@@ -2533,11 +2533,14 @@ class ReportingEngine:
 
         for rank, p in enumerate(profiles, 1):
             mode_badge = ("[FLEXIBLE]" if p.docking_mode == "FLEXIBLE" else "[RIGID]   ")
-            val_rmsd_str = (
-                f"{p.validation_rmsd_pos:.3f} A (Pos) | {p.validation_rmsd_conf:.3f} A (Conf)"
-                if p.validation_rmsd_pos is not None
-                else "N/A  (no reference structure or RDKit unavailable)"
-            )
+            if p.validation_rmsd_pos is not None and p.validation_rmsd_conf is not None:
+                val_rmsd_str = f"{p.validation_rmsd_pos:.3f} A (Pos) | {p.validation_rmsd_conf:.3f} A (Conf)"
+            elif p.validation_rmsd_pos is not None:
+                val_rmsd_str = f"{p.validation_rmsd_pos:.3f} A (Pos)"
+            elif p.validation_rmsd_conf is not None:
+                val_rmsd_str = f"{p.validation_rmsd_conf:.3f} A (Conf)"
+            else:
+                val_rmsd_str = "N/A  (no reference structure or RDKit unavailable)"
             lines += [
                 hsep,
                 f"  Rank {rank:>3}.  {p.ligand}  <-  {p.protein}  {mode_badge}",

@@ -141,8 +141,8 @@ class ResultsTab(ctk.CTkFrame):
         self.tree_poses = widgets.styled_treeview(left, self.POSE_COLS, height=5)
         for col, w in zip(self.POSE_COLS, (80, 130, 150, 120, 120)):
             self.tree_poses.heading(col, text={
-                "Affinity": "ΔG (kcal/mol)", "RMSD_lb": "RMSD l.b. (Å)",
-                "RMSD_ub": "RMSD u.b. (Å)", "Ki": "Est. Ki / Kd"
+                "Affinity": "Affinity (kcal/mol)", "RMSD_lb": "RMSD l.b. (Å)",
+                "RMSD_ub": "RMSD u.b. (Å)", "Ki": "Est. Ki (AD4 only)"
             }.get(col, col))
             self.tree_poses.column(col, width=w, anchor="center")
         self.tree_poses.grid(row=3, column=0, columnspan=2, sticky="ew", padx=4, pady=(2, 6))
@@ -416,19 +416,18 @@ class ResultsTab(ctk.CTkFrame):
                 self.tree_poses.selection_set(first[0])
             return
 
-        from gui.app import calculate_inhibition_constant  # imported from app util
+        # Vina does not report Ki; thermodynamic inference is strictly forbidden.
         for i, res in enumerate(job.vina_results):
-            try:
-                _, ki_str = calculate_inhibition_constant(res.binding_affinity)
-            except Exception:
-                ki_str = "—"
             tag = "even" if i % 2 == 0 else "odd"
+            rmsd_lb = f"{res.rmsd_lower_bound:.3f}" if res.rmsd_lower_bound is not None else "—"
+            rmsd_ub = f"{res.rmsd_upper_bound:.3f}" if res.rmsd_upper_bound is not None else "—"
+            aff_str = f"{res.binding_affinity:.2f}" if res.binding_affinity is not None else "—"
             self.tree_poses.insert("", "end", tags=(tag,), values=(
                 res.pose,
-                f"{res.binding_affinity:.2f}",
-                ki_str,
-                f"{res.rmsd_lower_bound:.3f}",
-                f"{res.rmsd_upper_bound:.3f}",
+                aff_str,
+                "—",
+                rmsd_lb,
+                rmsd_ub,
             ))
 
         # Auto-select first pose and show its interactions

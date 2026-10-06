@@ -56,7 +56,7 @@ from models import (
     SUITE_BANNER, AnalysisStatus, AutoDock4Metrics, CanonicalPose,
     ClusterInfo, DockingJob, DockingMode, DockingResult, Engine,
     ExecutionStatus, JobStatus, ProvenanceRecord, ResumeMode,
-    ThermodynamicAnalysis, calculate_inhibition_constant, __version__,
+    ThermodynamicAnalysis, __version__,
 )
 from process_manager import compute_file_hash, process_manager, terminate_process
 
@@ -637,7 +637,8 @@ def run_ad4_job(job: DockingJob, config: ProjectConfig) -> DockingJob:
         return job
 
     # Step 2: Setup output directories
-    output_dir = job.output_dir
+    output_dir = job.output_dir or (config.result_directory / "AUTODOCK4" / f"{job.receptor_name}_x_{job.ligand_name}")
+    job.output_dir = output_dir
     output_dir.mkdir(parents=True, exist_ok=True)
 
     # Step 3: Extract grid parameters
@@ -823,15 +824,18 @@ def run_ad4_job(job: DockingJob, config: ProjectConfig) -> DockingJob:
             )
 
             provenance = ProvenanceRecord(
+                application_version=__version__,
                 app_version=__version__,
                 engine="AutoDock4",
                 engine_version="4.2",
                 docking_mode=job.docking_mode.value,
-                receptor_file=str(job.receptor_path),
+                receptor_name=job.receptor_name,
+                receptor_path=str(job.receptor_path) if job.receptor_path else None,
                 receptor_hash=compute_file_hash(job.receptor_path) if job.receptor_path.exists() else "",
-                ligand_file=str(job.ligand_path),
+                ligand_name=job.ligand_name,
+                ligand_path=str(job.ligand_path) if job.ligand_path else None,
                 ligand_hash=compute_file_hash(job.ligand_path) if job.ligand_path.exists() else "",
-                config_file=str(job.config_path) if job.config_path else "",
+                config_path=str(job.config_path) if job.config_path else None,
                 config_hash=compute_file_hash(job.config_path) if job.config_path and job.config_path.exists() else "",
                 executable_path=str(config.autodock4_executable),
                 output_files=[str(f) for f in [dlg_path, gpf_path, dpf_path, glg_path] if f and f.exists()],

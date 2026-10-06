@@ -64,8 +64,8 @@ def _build_vina_rows(jobs: List[DockingJob]) -> List[Dict[str, Any]]:
                     "Pose": pose.rank,
                     "Binding_Affinity_kcal_mol": pose.binding_energy,
                     "Estimated_Ki_nM": pose.estimated_ki_nM if pose.estimated_ki_nM is not None else "",
-                    "RMSD_Lower_Bound": vm.rmsd_lower_bound if vm and vm.rmsd_lower_bound is not None else 0.0,
-                    "RMSD_Upper_Bound": vm.rmsd_upper_bound if vm and vm.rmsd_upper_bound is not None else 0.0,
+                    "RMSD_Lower_Bound": vm.rmsd_lower_bound if vm and vm.rmsd_lower_bound is not None else "",
+                    "RMSD_Upper_Bound": vm.rmsd_upper_bound if vm and vm.rmsd_upper_bound is not None else "",
                     "Validation_RMSD": pose.validation_rmsd if pose.validation_rmsd is not None else "",
                     "Requested_Modes": job.requested_modes,
                     "Obtained_Modes": job.obtained_modes or len(job.canonical_result.poses),
@@ -79,8 +79,8 @@ def _build_vina_rows(jobs: List[DockingJob]) -> List[Dict[str, Any]]:
         for result in modes:
             pose = _get_val(result, "pose", "mode", default=1)
             affinity = _get_val(result, "binding_affinity", "affinity_kcal_mol", default=None)
-            rmsd_lb = _get_val(result, "rmsd_lower_bound", "rmsd_lb", default=0.0)
-            rmsd_ub = _get_val(result, "rmsd_upper_bound", "rmsd_ub", default=0.0)
+            rmsd_lb = _get_val(result, "rmsd_lower_bound", "rmsd_lb", default="")
+            rmsd_ub = _get_val(result, "rmsd_upper_bound", "rmsd_ub", default="")
             rows.append({
                 "Receptor": job.receptor_name,
                 "Docking_Mode": job.docking_mode.value,
@@ -135,8 +135,8 @@ def _build_vina_summary(jobs: List[DockingJob]) -> List[Dict[str, Any]]:
                 "Best_Affinity_kcal_mol": best_pose.binding_energy,
                 "Best_Pose": best_pose.rank,
                 "Total_Poses": len(job.canonical_result.poses),
-                "RMSD_lb": vm.rmsd_lower_bound if vm and vm.rmsd_lower_bound is not None else 0.0,
-                "RMSD_ub": vm.rmsd_upper_bound if vm and vm.rmsd_upper_bound is not None else 0.0,
+                "RMSD_lb": vm.rmsd_lower_bound if vm and vm.rmsd_lower_bound is not None else "",
+                "RMSD_ub": vm.rmsd_upper_bound if vm and vm.rmsd_upper_bound is not None else "",
                 "Elapsed_s": round(job.elapsed_seconds, 1),
                 "Status": job.status.value,
             })
@@ -151,8 +151,8 @@ def _build_vina_summary(jobs: List[DockingJob]) -> List[Dict[str, Any]]:
                 "Best_Affinity_kcal_mol": _get_val(best, "binding_affinity", "affinity_kcal_mol"),
                 "Best_Pose": _get_val(best, "pose", "mode", default=1),
                 "Total_Poses": job.obtained_modes or len(modes),
-                "RMSD_lb": _get_val(best, "rmsd_lower_bound", "rmsd_lb", default=0.0),
-                "RMSD_ub": _get_val(best, "rmsd_upper_bound", "rmsd_ub", default=0.0),
+                "RMSD_lb": _get_val(best, "rmsd_lower_bound", "rmsd_lb", default=""),
+                "RMSD_ub": _get_val(best, "rmsd_upper_bound", "rmsd_ub", default=""),
                 "Elapsed_s": round(job.elapsed_seconds, 1),
                 "Status": job.status.value,
             })

@@ -49,30 +49,14 @@ logger = logging.getLogger("docking_automation.gui")
 
 def calculate_inhibition_constant(
     delta_g_kcal_mol: float, temp_kelvin: float = 298.15
-) -> Tuple[float, str]:
-    """Computes estimated inhibition constant (Ki / Kd) from ΔG.
-
-    Based on: ΔG = RT·ln(Ki)  where R = 1.987 cal/mol·K
+) -> Tuple[Optional[float], str]:
+    """Thermodynamic inference from Vina affinity is strictly prohibited in ADSP.
+    AutoDock4 Ki values must be DLG-driven only.
     """
-    rt = 0.001987204 * temp_kelvin
-    try:
-        ki_molar = math.exp(delta_g_kcal_mol / rt)
-    except OverflowError:
-        return (0.0, "N/A")
-
-    if ki_molar < 1e-12:
-        formatted = f"{ki_molar * 1e15:.2f} fM"
-    elif ki_molar < 1e-9:
-        formatted = f"{ki_molar * 1e12:.2f} pM"
-    elif ki_molar < 1e-6:
-        formatted = f"{ki_molar * 1e9:.2f} nM"
-    elif ki_molar < 1e-3:
-        formatted = f"{ki_molar * 1e6:.2f} μM"
-    elif ki_molar < 1.0:
-        formatted = f"{ki_molar * 1e3:.2f} mM"
-    else:
-        formatted = f"{ki_molar:.2f} M"
-    return (ki_molar, formatted)
+    raise NotImplementedError(
+        "Thermodynamic inference is not supported: Vina does not report Ki, "
+        "and AutoDock4 Ki must be parsed directly from the DLG."
+    )
 
 
 # ---------------------------------------------------------------------------

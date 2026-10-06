@@ -132,6 +132,18 @@ def generate_spec_file(bins: Dict[str, Optional[Path]]) -> Path:
             datas.append(f"('{(local_bin / 'data').as_posix()}', 'bin/data')")
             datas.append(f"('{(local_bin / 'data').as_posix()}', '_internal/bin/data')")
 
+    # Bundle AD4 scientific parameter assets -- REQUIRED for packaged AD4 operation.
+    # ad4_compatibility.py resolves them relative to Path(__file__).parent, which
+    # inside a PyInstaller bundle corresponds to _internal/.  Destination '.' places
+    # them at the root of _internal/ alongside all other bundled .py modules.
+    for _ad4_asset in ('AD4_parameters.dat', 'AD4.1_bound.dat', 'AutoDock4Zn-Pipeline-main.zip'):
+        _ad4_path = Path(_ad4_asset)
+        if _ad4_path.is_file():
+            datas.append(f"('{_ad4_path.resolve().as_posix()}', '.')")
+            print(f"  + Bundling AD4 parameter asset: {_ad4_asset}")
+        else:
+            print(f"  - AD4 asset not found (skipping): {_ad4_asset}")
+
     # Add discovered binaries into bin/ folder of distribution
     binaries = []
     for name, path in bins.items():
@@ -392,6 +404,21 @@ def copy_distribution_assets(dist_dir: Path, bins: Dict[str, Optional[Path]]) ->
             cfg_text += '\n[ui]\ntheme = "Noir"\n'
         (dist_dir / "project_config.toml").write_text(cfg_text, encoding="utf-8")
         print("  + Generated portable project_config.toml in distribution root (theme=Noir)")
+
+    # Copy AD4 scientific parameter assets to _internal/ so ad4_compatibility.py
+    # module-relative lookup finds them in the packaged application.
+    # Reference checksums (verified in test_ad4_compatibility.py):
+    #   AD4_parameters.dat : 625DE5779B914382E21A135C776EFBC02B4221085BD0280118D103CCDD93EA7C
+    #   AD4.1_bound.dat    : 6B98F7AB508F4882801938F8CED1C0BF38096496155A8005BAF941A201781CE8
+    _internal_dir = dist_dir / '_internal'
+    _internal_dir.mkdir(parents=True, exist_ok=True)
+    for _ad4_asset in ('AD4_parameters.dat', 'AD4.1_bound.dat', 'AutoDock4Zn-Pipeline-main.zip'):
+        _src = Path(_ad4_asset)
+        if _src.is_file():
+            shutil.copy2(_src, _internal_dir / _ad4_asset)
+            print(f"  + Copied {_ad4_asset} to {_internal_dir}")
+        else:
+            print(f"  - Skipping missing asset: {_ad4_asset}")
 
     # Copy dlg_extract.py for standalone AD4 result extraction
     dlg_py = Path("dlg_extract.py")

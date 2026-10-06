@@ -27,7 +27,7 @@ from models import (
     AnalysisStatus, AutoDock4Metrics, CanonicalPose, ClusterInfo,
     DockingJob, DockingMode, DockingResult, Engine, ExecutionStatus,
     JobStatus, ProvenanceRecord, ResumeMode, ThermodynamicAnalysis,
-    ValidationMetrics, VinaMetrics, calculate_inhibition_constant,
+    ValidationMetrics, VinaMetrics,
     format_metric, __version__,
 )
 from process_manager import (
