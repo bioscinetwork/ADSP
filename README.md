@@ -182,11 +182,11 @@ If you use ADSP in academic research, please cite:
 
 ```bibtex
 @software{adsp2026,
-  author = {ADSP Contributors},
+  author = {Chibuike Praise Okechukwu},
   title = {AutoDock Suite Platform (ADSP): Unified Molecular Docking Platform},
   version = {0.3.0},
   year = {2026},
-  url = {https://github.com/your-org/ADSP}
+  url = {https://github.com/bioscinetwork/ADSP}
 }
 ```
 
